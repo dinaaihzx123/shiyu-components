@@ -1,8 +1,7 @@
 #!/bin/sh
-# Linux NAS，全新实例。先导入发行镜像，并在环境中填写本机 LAN IP。
-# 此脚本不会覆盖现有容器；名称冲突时由 Docker 拒绝创建。
+# 全新实例，与 Compose 二选一。不会覆盖已存在的同名容器。
 set -eu
-: "${SHIYU_IMAGE:?请填写已导入或已发布的固定镜像}"
+SHIYU_IMAGE=${SHIYU_IMAGE:-xuelingyun/shiyu:dev}
 SHIYU_BIND_IP=${SHIYU_BIND_IP:-127.0.0.1}
 SHIYU_HTTP_PORT=${SHIYU_HTTP_PORT:-18930}
 SHIYU_MEMORY_MB=${SHIYU_MEMORY_MB:-768}

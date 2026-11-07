@@ -1,9 +1,9 @@
-# 拾语 · Linux NAS 单容器配置
-# 在本文件旁放置 .env 和 data/，按随附发行说明填写固定镜像。
-name: shiyu-rust
+# 拾语：Linux x86_64 单容器。先在 .env 中填写本机局域网 IP。
+# 同目录保留 data/；不要把现有实例的数据目录改成空目录。
+name: shiyu
 services:
   shiyu:
-    image: ${SHIYU_IMAGE:?请在.env中填写已导入或已发布的固定镜像}
+    image: ${SHIYU_IMAGE:-xuelingyun/shiyu:dev}
     container_name: shiyu-core
     restart: unless-stopped
     network_mode: host
