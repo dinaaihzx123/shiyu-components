@@ -1,0 +1,39 @@
+# 拾语：Linux x86_64 单容器。先在 .env 中填写本机局域网 IP。
+# 数据存储在 Docker 管理的本地卷中；先确认 Docker 数据目录位于数据盘。
+name: shiyu
+services:
+  shiyu:
+    image: ${SHIYU_IMAGE:-xuelingyun/shiyu:dev}
+    container_name: shiyu-core
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SHIYU_LISTEN: ${SHIYU_BIND_IP:-127.0.0.1}:${SHIYU_HTTP_PORT:-18930}
+      SHIYU_MEMORY_MB: "${SHIYU_MEMORY_MB:-768}"
+      TZ: ${TZ:-Asia/Shanghai}
+    volumes:
+      - type: volume
+        source: shiyu-data
+        target: /data
+    read_only: true
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=32m,mode=0755
+      - /tmp:rw,noexec,nosuid,size=32m,mode=1777
+    mem_limit: ${SHIYU_MEMORY_MB:-768}m
+    mem_reservation: 256m
+    memswap_limit: ${SHIYU_MEMORY_MB:-768}m
+    cpus: ${SHIYU_CPUS:-2.0}
+    pids_limit: 128
+    oom_score_adj: 500
+    cap_drop: [ALL]
+    cap_add: [CHOWN, FOWNER, DAC_OVERRIDE, SETUID, SETGID, KILL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 70s
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
+volumes:
+  shiyu-data:
+    name: ${SHIYU_VOLUME_NAME:-shiyu-data}

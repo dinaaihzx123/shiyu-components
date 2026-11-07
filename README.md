@@ -47,6 +47,22 @@ docker logs --tail 100 shiyu-core
 docker exec shiyu-core /usr/local/bin/shiyu-core healthcheck
 ```
 
+### 极空间及虚拟共享目录
+
+如果 NAS 的共享目录通过虚拟文件系统提供，请使用 Docker 本地数据卷版 [compose.volume.yaml](compose.volume.yaml)。极空间实测：虚拟共享目录直接绑定时，数据库初始化失败；改用现有 Docker 数据盘上的本地卷后正常启动。Docker 的数据盘应有足够容量。
+
+数据卷版与上面的目录绑定版二选一。准备同一份 .env 后使用：
+
+```sh
+docker compose -f compose.volume.yaml config --quiet
+docker compose -f compose.volume.yaml pull
+docker compose -f compose.volume.yaml up -d
+```
+
+没有 Compose 命令时，用 SHIYU_STORAGE=volume sh ./docker-run.sh；可通过 SHIYU_VOLUME_NAME 指定卷名。若已在 Docker 中载入同一镜像，CLI 可加 SHIYU_PULL_POLICY=never。Docker Hub 无法直连时，需要设备本身已有的出站网络路径，普通用户无需为了应用修改 Docker 全局配置。
+
+数据卷由 Docker 管理。不要使用 down -v 清理服务；迁移前按文档导出档案，或在停止实例后按 Docker 的卷迁移方式搬运完整数据。
+
 ## 开始使用
 
 采集端：[Windows x64 开发版（便携包）](https://github.com/dinaaihzx123/shiyu-components/releases/tag/desktop-dev)。解压整个包后打开 `Shiyu.exe`。升级请沿用原配置和队列目录，避免重新建立同步进度。部分图片转换和视频缩略图所需的媒体支持，可在采集端设置中按需下载。
